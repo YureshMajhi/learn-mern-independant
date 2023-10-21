@@ -1,6 +1,29 @@
 import React from "react";
+import { UseWorkoutsContext } from "../hooks/UseWorkoutsContext";
+
+// date fns
+import formatDistanceToNow from "date-fns/formatDistanceToNow";
+
+// react icons
+import { BiTrash } from "react-icons/bi";
 
 const WorkoutDetails = ({ workout }) => {
+  const { dispatch } = UseWorkoutsContext();
+
+  const handleClick = async () => {
+    const response = await fetch(
+      "http://localhost:3000/api/workouts/" + workout._id,
+      {
+        method: "DELETE",
+      }
+    );
+    const json = await response.json();
+
+    if (response.ok) {
+      dispatch({ type: "DELETE_WORKOUT", payload: json });
+    }
+  };
+
   return (
     <>
       <div className="workout-details">
@@ -13,7 +36,14 @@ const WorkoutDetails = ({ workout }) => {
           <strong>Reps : </strong>
           {workout.reps}
         </p>
-        <p>{workout.createdAt}</p>
+        <p>
+          {formatDistanceToNow(new Date(workout.createdAt), {
+            addSuffix: true,
+          })}
+        </p>
+        <span onClick={handleClick}>
+          <BiTrash />
+        </span>
       </div>
     </>
   );
