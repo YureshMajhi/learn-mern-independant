@@ -6,15 +6,24 @@ import formatDistanceToNow from "date-fns/formatDistanceToNow";
 
 // react icons
 import { BiTrash } from "react-icons/bi";
+import { useAuthContext } from "../hooks/UseAuthContext";
 
 const WorkoutDetails = ({ workout }) => {
   const { dispatch } = UseWorkoutsContext();
+  const { user } = useAuthContext();
 
   const handleClick = async () => {
+    if (!user) {
+      return;
+    }
+
     const response = await fetch(
       "http://localhost:3000/api/workouts/" + workout._id,
       {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
       }
     );
     const json = await response.json();
